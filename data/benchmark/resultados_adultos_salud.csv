@@ -1,0 +1,9 @@
+fase,modo,segundos,pico_mb,extra_mb
+limpieza,convencional,2.43,245.19,110.29
+limpieza,lotes 5000,6.97,169.08,33.96
+limpieza,lotes 10000,4.47,171.14,35.89
+limpieza,lotes 50000,2.98,180.86,45.61
+transformacion,convencional,4.12,291.99,156.74
+transformacion,lotes 5000,6.24,145.98,10.73
+transformacion,lotes 10000,5.49,151.7,16.46
+transformacion,lotes 50000,4.79,193.2,57.95
