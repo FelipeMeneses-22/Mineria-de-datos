@@ -1,0 +1,4 @@
+modelo,entrena_s,acc_train,acc_test,precision,recall,f1
+Arbol (prof=4),0.0964,0.913,0.912,0.561,0.062,0.112
+Naive Bayes,0.0594,0.703,0.703,0.2,0.78,0.318
+KNN (k=5),0.0459,0.922,0.903,0.372,0.133,0.196

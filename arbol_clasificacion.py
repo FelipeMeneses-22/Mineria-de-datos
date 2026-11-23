@@ -42,7 +42,7 @@ def main() -> None:
     plt.bar(conteo.index, conteo.values, color=["#4c78a8", "#e45756"])
     for i, v in enumerate(conteo.values):
         plt.text(i, v, f"{v / len(y):.1%}", ha="center", va="bottom")
-    plt.title("Distribución de HeartDisease (clases desbalanceadas)")
+    plt.title("HeartDisease: muy pocas personas con enfermedad (clases desbalanceadas)")
     plt.ylabel("Cantidad de personas")
     plt.tight_layout()
     plt.savefig(CARPETA / "1_distribucion_objetivo.png", dpi=130)
@@ -66,12 +66,12 @@ def main() -> None:
 
     # ---------- Gráfica 2: train vs test ----------
     plt.figure(figsize=(8, 5))
-    plt.plot(etiquetas, acc_train, marker="o", label="Train")
-    plt.plot(etiquetas, acc_test, marker="o", label="Test")
-    plt.axhline(base, color="gray", linestyle="--", label="Línea base (siempre 'No')")
-    plt.xlabel("max_depth")
-    plt.ylabel("Accuracy")
-    plt.title("Sobreajuste: train sube, test no")
+    plt.plot(etiquetas, acc_train, marker="o", label="Datos de entrenamiento")
+    plt.plot(etiquetas, acc_test, marker="o", label="Datos de prueba")
+    plt.axhline(base, color="gray", linestyle="--", label="Responder siempre 'No'")
+    plt.xlabel("Profundidad del árbol (preguntas seguidas)")
+    plt.ylabel("Aciertos totales (accuracy)")
+    plt.title("¿Aprende o memoriza? Entrenamiento sube, prueba no")
     plt.legend()
     plt.grid(alpha=0.3)
     plt.tight_layout()
@@ -98,8 +98,8 @@ def main() -> None:
     imp = imp[imp > 0].sort_values()              # solo las que el árbol usó
     plt.figure(figsize=(9, 5))
     plt.barh(imp.index, imp.values)
-    plt.xlabel("Importancia")
-    plt.title("Variables que usó el árbol")
+    plt.xlabel("Importancia (qué tanto usó el árbol esta variable)")
+    plt.title("Qué variables usó el árbol")
     plt.tight_layout()
     plt.savefig(CARPETA / "4_importancia.png", dpi=130)
     plt.close()
@@ -110,15 +110,18 @@ def main() -> None:
     balanceado = DecisionTreeClassifier(max_depth=3, random_state=42,
                                         class_weight="balanced")
     balanceado.fit(X_train, y_train)
-    fig, ejes = plt.subplots(1, 2, figsize=(11, 5))
+    fig, ejes = plt.subplots(1, 2, figsize=(12, 5.5))
     for eje, modelo, titulo in [(ejes[0], arbol, "Árbol normal"),
                                 (ejes[1], balanceado, "Árbol balanceado")]:
         ConfusionMatrixDisplay.from_estimator(
             modelo, X_test, y_test, normalize="true",   # % por fila real
-            values_format=".0%", ax=eje, colorbar=False)
+            values_format=".0%", ax=eje, colorbar=False,
+            display_labels=["Sin enfermedad", "Con enfermedad"])
         rec = recall_score(y_test, modelo.predict(X_test), pos_label="Yes")
-        eje.set_title(f"{titulo}\naccuracy {modelo.score(X_test, y_test):.3f}"
-                      f" | recall Yes {rec:.3f}")
+        eje.set_title(f"{titulo}\naciertos totales {modelo.score(X_test, y_test):.1%}"
+                      f" | enfermos detectados {rec:.0%}", fontsize=12)
+        eje.set_xlabel("Lo que predijo el árbol")
+        eje.set_ylabel("Lo que realmente ocurrió")
         print(f"{titulo}: accuracy {modelo.score(X_test, y_test):.3f}"
               f" | recall Yes {rec:.3f}")
     plt.tight_layout()

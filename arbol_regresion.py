@@ -12,6 +12,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.ticker import FuncFormatter
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor, plot_tree
 
@@ -52,17 +53,27 @@ def analizar(nombre: str, objetivo: str) -> None:
         r2_test.append(modelo.score(X_test, y_test))
         print(f"{etiqueta:>10}   {r2_train[-1]:>8.3f}   {r2_test[-1]:>7.3f}")
 
-    # ---------- Gráfica 1: sobreajuste ----------
-    plt.figure(figsize=(8, 5))
-    plt.plot(etiquetas, r2_train, marker="o", label="Train")
-    plt.plot(etiquetas, r2_test, marker="o", label="Test")
-    plt.xlabel("max_depth")
-    plt.ylabel("R2 (1 = predicción perfecta)")
-    plt.title(f"{nombre}: R2 en train vs test")
-    plt.legend()
+    # ---------- Gráfica 1: ¿aprende o memoriza? ----------
+    mejor = r2_test.index(max(r2_test))             # posición del mejor R2 en prueba
+    plt.figure(figsize=(9, 5.5))
+    plt.plot(etiquetas, r2_train, marker="o", linewidth=2.5,
+             label="Datos de entrenamiento (los que el árbol ya vio)")
+    plt.plot(etiquetas, r2_test, marker="o", linewidth=2.5,
+             label="Datos de prueba (datos nuevos)")
+    plt.fill_between(range(mejor, len(etiquetas)), r2_test[mejor:], r2_train[mejor:],
+                     color="red", alpha=0.10, label="Zona donde memoriza")
+    plt.annotate(f"Mejor punto: profundidad {etiquetas[mejor]}",
+                 xy=(mejor, r2_test[mejor]), xytext=(mejor - 1.0, r2_test[mejor] - 0.24),
+                 arrowprops={"arrowstyle": "->"}, fontsize=12)
+    plt.xlabel("Profundidad del árbol (cantidad de preguntas seguidas)", fontsize=12)
+    plt.ylabel("Qué tan bien acierta (R²: 1 = perfecto)", fontsize=12)
+    plt.title(f"{nombre}: ¿el árbol aprende o memoriza?", fontsize=14)
+    plt.ylim(top=1.2)
+    plt.yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+    plt.legend(loc="upper left", fontsize=10)
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig(carpeta / "1_sobreajuste.png", dpi=130)
+    plt.savefig(carpeta / "1_sobreajuste.png", dpi=150)
     plt.close()
 
     # ---------- 4. Árbol final (profundidad 3 para que se lea) ----------
@@ -84,24 +95,33 @@ def analizar(nombre: str, objetivo: str) -> None:
     imp = imp[imp > 0].sort_values()
     plt.figure(figsize=(8, 4))
     plt.barh(imp.index, imp.values)
-    plt.xlabel("Importancia")
-    plt.title(f"{nombre}: variables que usó el árbol")
+    plt.xlabel("Importancia (qué tanto usó el árbol esta variable)")
+    plt.title(f"{nombre}: qué variables usó el árbol")
     plt.tight_layout()
     plt.savefig(carpeta / "3_importancia.png", dpi=130)
     plt.close()
 
-    # ---------- Gráfica 4: real vs predicho (solo test) ----------
+    # ---------- Gráfica 4: costo real vs costo que predice el árbol ----------
     pred = arbol.predict(X_test)
-    plt.figure(figsize=(6, 6))
+    plt.figure(figsize=(7, 7))
     plt.scatter(y_test, pred, s=6, alpha=0.3)
     limites = [y_test.min(), y_test.max()]
-    plt.plot(limites, limites, color="red", linestyle="--", label="Predicción perfecta")
-    plt.xlabel(f"{objetivo} real")
-    plt.ylabel(f"{objetivo} predicho")
-    plt.title(f"{nombre}: real vs predicho (max_depth=3)")
-    plt.legend()
+    plt.plot(limites, limites, color="red", linestyle="--", linewidth=2,
+             label="Predicción perfecta")
+    plt.text(0.03, 0.72,
+             f"Cada fila de puntos es una hoja del árbol:\n"
+             f"{arbol.get_n_leaves()} hojas = solo {arbol.get_n_leaves()} valores posibles",
+             transform=plt.gca().transAxes, ha="left", fontsize=11,
+             bbox={"boxstyle": "round", "facecolor": "white", "edgecolor": "gray"})
+    miles = FuncFormatter(lambda v, _: f"{v:,.0f}".replace(",", "."))
+    plt.gca().xaxis.set_major_formatter(miles)
+    plt.gca().yaxis.set_major_formatter(miles)
+    plt.xlabel(f"{objetivo} real (lo que ocurrió)", fontsize=12)
+    plt.ylabel(f"{objetivo} predicho (lo que dice el árbol)", fontsize=12)
+    plt.title(f"{nombre}: valor real vs valor predicho", fontsize=14)
+    plt.legend(loc="upper left", fontsize=11)
     plt.tight_layout()
-    plt.savefig(carpeta / "4_real_vs_predicho.png", dpi=130)
+    plt.savefig(carpeta / "4_real_vs_predicho.png", dpi=150)
     plt.close()
 
 

@@ -1,0 +1,5 @@
+modelo,entrena_s,acc_train,acc_test,precision,recall,f1
+"Árbol (prof=4, balanced)",0.0056,0.848,0.846,0.31,0.615,0.412
+Naive Bayes,0.0017,0.909,0.909,0.333,0.031,0.056
+Naive Bayes (priors 50/50),0.0017,0.729,0.708,0.184,0.677,0.289
+KNN (k=5),0.0073,0.94,0.934,0.786,0.338,0.473

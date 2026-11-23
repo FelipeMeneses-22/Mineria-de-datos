@@ -1,0 +1,9 @@
+dataset,modelo,mae,mae_desv,rmse,rmse_desv,r2,r2_desv
+insurance,Siempre el promedio (referencia),8987.4786,89.8518,12185.0992,89.6121,-0.0001,0.0001
+insurance,Regresión lineal,3954.916,37.3643,6009.6786,70.1922,0.7567,0.004
+insurance,Árbol (prof. 4),2424.5035,20.9226,4374.1804,76.3555,0.8711,0.0038
+insurance,Random Forest,2203.4039,10.0146,4155.833,80.3504,0.8836,0.004
+Medicalpremium,Siempre el promedio (referencia),4952.6924,386.3226,6242.6632,385.692,-0.0085,0.0084
+Medicalpremium,Regresión lineal,2720.5827,203.8437,3807.8938,400.5836,0.6167,0.0949
+Medicalpremium,Árbol (prof. 4),1834.6704,103.8192,3176.2928,348.9787,0.7329,0.0638
+Medicalpremium,Random Forest,1156.3711,163.696,2812.8778,462.1846,0.7881,0.0673

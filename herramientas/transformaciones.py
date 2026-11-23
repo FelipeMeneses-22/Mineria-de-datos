@@ -16,7 +16,7 @@ from herramientas.io_datos import guardar_csv, leer_csv
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-RAIZ = Path(__file__).resolve().parent
+RAIZ = Path(__file__).resolve().parent.parent   # raíz del proyecto (este archivo está en herramientas/)
 
 
 def distancia(a: pd.Series, b: pd.Series) -> float:

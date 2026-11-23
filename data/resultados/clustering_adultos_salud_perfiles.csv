@@ -1,0 +1,5 @@
+cluster,segmento,personas,% del total,edad,BMI,PhysicalHealth,MentalHealth,SleepTime,% con enfermedad cardíaca
+0,Jóvenes sanos,106521,35.3,37.1,28.2,0.9,1.9,6.9,1.7
+1,Adultos con malestar emocional,27596,9.1,45.0,29.2,3.0,23.4,6.6,6.9
+2,Mayores con mala salud física,27171,9.0,61.5,30.6,27.2,9.9,6.8,23.0
+3,Mayores estables,140429,46.5,68.2,28.0,1.1,0.9,7.4,12.3

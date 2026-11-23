@@ -29,7 +29,7 @@ from sklearn.preprocessing import StandardScaler
 from herramientas.estadisticas import resumen_iqr
 from herramientas.transformaciones_lotes import transformar_por_lotes
 from limpieza.lotes_cleaner import BatchCleaner
-from main_lotes import DATASETS, RAIZ
+from config import DATASETS, RAIZ
 
 TAMANOS = [5000, 10000, 50000]
 CARPETA = RAIZ / "data" / "benchmark"

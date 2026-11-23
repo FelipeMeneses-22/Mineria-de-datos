@@ -1,0 +1,5 @@
+cluster,segmento,personas,% del total,age,bmi,children,fuma,Costo médico medio (charges)
+0,Jóvenes no fumadores,145264,29.1,25.57,29.4,0.46,0.0,4201.0
+1,Fumadores,102862,20.6,38.43,30.77,1.1,1.0,32230.0
+2,Familias con hijos,114332,22.9,40.99,31.04,2.7,0.0,9451.0
+3,No fumadores maduros,137542,27.5,52.74,31.6,0.42,0.0,11683.0

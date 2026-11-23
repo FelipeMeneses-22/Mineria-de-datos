@@ -9,56 +9,9 @@ Uso:  python main_lotes.py            (lotes de 10000 filas)
 """
 
 import sys
-from pathlib import Path
-
 from herramientas.transformaciones_lotes import transformar_por_lotes
 from limpieza.lotes_cleaner import BatchCleaner
-
-RAIZ = Path(__file__).resolve().parent
-
-# Cada dataset tiene SUS columnas y reglas: no se asume que sean iguales.
-DATASETS = {
-    "insurance": {
-        "raw": "insurance.csv",
-        "verificar": ["sex", "smoker", "region"],
-        "iqr": ["bmi", "charges", "age"],
-        "transf": {"numericas": ["age", "bmi", "children"],
-                   "categoricas": ["sex", "smoker", "region"],
-                   "binarias": [], "objetivo": "charges"},
-    },
-    "Medicalpremium": {
-        "raw": "Medicalpremium.csv",
-        "verificar": ["Diabetes", "BloodPressureProblems", "AnyTransplants",
-                      "AnyChronicDiseases", "KnownAllergies",
-                      "HistoryOfCancerInFamily"],
-        "iqr": ["Age", "Height", "Weight", "PremiumPrice",
-                "NumberOfMajorSurgeries"],
-        "transf": {"numericas": ["Age", "Height", "Weight",
-                                 "NumberOfMajorSurgeries"],
-                   "categoricas": [],
-                   "binarias": ["Diabetes", "BloodPressureProblems",
-                                "AnyTransplants", "AnyChronicDiseases",
-                                "KnownAllergies", "HistoryOfCancerInFamily"],
-                   "objetivo": "PremiumPrice"},
-    },
-    "adultos_salud": {
-        "raw": "adultos_salud.csv",
-        "verificar": ["Smoking", "AlcoholDrinking", "Stroke", "DiffWalking",
-                      "Sex", "AgeCategory", "Race", "Diabetic",
-                      "PhysicalActivity", "GenHealth", "Asthma",
-                      "KidneyDisease", "SkinCancer"],
-        "iqr": ["BMI", "PhysicalHealth", "MentalHealth", "SleepTime"],
-        "transf": {"numericas": ["BMI", "PhysicalHealth", "MentalHealth",
-                                 "SleepTime"],
-                   "categoricas": ["Smoking", "AlcoholDrinking", "Stroke",
-                                   "DiffWalking", "Sex", "AgeCategory",
-                                   "Race", "Diabetic", "PhysicalActivity",
-                                   "GenHealth", "Asthma", "KidneyDisease",
-                                   "SkinCancer"],
-                   "binarias": [], "objetivo": "HeartDisease"},
-    },
-}
-
+from config import DATASETS, RAIZ
 
 def main(tamano_lote: int = 10000) -> None:
     for nombre, cfg in DATASETS.items():

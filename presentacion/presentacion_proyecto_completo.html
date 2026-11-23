@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proyecto de Minería de Datos: del dato crudo al árbol de decisión</title><style>*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0f1826;overflow:hidden;font-family:"Helvetica Neue",Arial,sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;background:#f6f4ef;color:#1b2a41}
+.slide{display:none;position:absolute;inset:0;padding:96px 128px;flex-direction:column;gap:36px}
+.slide.activa{display:flex}
+h1{font-size:88px;line-height:1.05}h2{font-size:64px;line-height:1.1}
+.portada{background:#1b2a41;color:#f6f4ef;justify-content:center;gap:32px;padding:128px}
+.sub{font-size:44px}.tag{font-size:30px;color:#f2a65a}
+table{width:100%;font-size:30px;border-collapse:collapse}
+th{background:#1b2a41;color:#f6f4ef;text-align:left;padding:14px}
+td{padding:16px;border-bottom:1px solid #d9d4c7}
+ul{font-size:32px;line-height:1.4;padding-left:40px}li+li{margin-top:12px}
+.fila{display:flex;gap:32px}.centro{align-items:center;gap:48px}
+.card{flex:1;background:#fff;border:1px solid #d9d4c7;border-radius:16px;padding:40px;display:flex;flex-direction:column;gap:16px}
+.card h3{font-size:36px;color:#b85c0a}.card p{font-size:30px;line-height:1.35}
+.clave{background:#1b2a41;color:#f6f4ef;border-radius:16px;padding:36px 44px}.clave p{font-size:34px;line-height:1.35}
+.nota{font-size:30px;line-height:1.4}.peq{font-size:28px}
+.arbol{width:1500px;height:625px;object-fit:contain;align-self:center}
+.matriz{width:960px;height:440px;object-fit:contain}
+.texto{display:flex;flex-direction:column;gap:20px;width:640px}.texto p{font-size:30px;line-height:1.35}
+.acento{color:#b85c0a}
+#barra{position:fixed;left:0;top:0;height:6px;background:#e07a1f;width:0;z-index:5}
+#hud{position:fixed;right:18px;bottom:12px;color:#8fa0b8;font:14px Arial;z-index:5}
+@media print{@page{size:1920px 1080px;margin:0}
+html,body{overflow:visible;height:auto;background:#fff}
+#stage{position:static;transform:none!important;width:1920px;height:auto}
+.slide{display:flex!important;position:relative;width:1920px;height:1080px;break-after:page}
+#barra,#hud{display:none}}
+.chips{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.chip{background:#1b2a41;color:#f6f4ef;border-radius:999px;padding:12px 26px;font-size:28px}
+.chip.on{background:#e07a1f;color:#1b2a41;font-weight:700}.flecha{font-size:28px;color:#8a8576}
+pre{font:26px/1.35 Consolas,"Courier New",monospace;background:#fff;border:1px solid #d9d4c7;border-radius:16px;padding:28px 36px;flex:1}
+.col{flex:1;display:flex;flex-direction:column;gap:20px}
+.fig{display:flex;flex-direction:column;gap:14px}.fig p{font-size:27px;line-height:1.35}
+.sobre{width:940px;height:575px;object-fit:contain}.real{width:575px;height:575px;object-fit:contain}
+.arbol{width:1500px;height:610px;object-fit:contain;align-self:center}
+.matriz{width:980px;height:449px;object-fit:contain}
+.t2{display:flex;gap:40px;align-items:flex-start}.t2>div{flex:1}.t2 table{font-size:26px}
+.sub2{font-size:28px;font-weight:700;color:#b85c0a;margin-bottom:10px}
+.estab{width:1500px;height:577px;object-fit:contain;align-self:center}
+</style></head><body>
+<div id="barra"></div><main id="stage"><section class="slide portada"><h1>Minería de Datos: del dato crudo al árbol de decisión</h1><p class="sub">Limpieza, escalabilidad, preparación y modelado en tres conjuntos de datos</p><p class="tag">adultos_salud · insurance · Medicalpremium</p></section><section class="slide"><h2>Tres conjuntos de datos, un mismo ciclo (CRISP-DM)</h2><table><tr><th>Datos</th><th>Filas</th><th>Qué queremos predecir</th><th>Tipo de problema</th></tr><tr><td>adultos_salud</td><td>319.795 → 301.717 sin repetidas</td><td>¿Tiene enfermedad cardíaca? (Sí/No)</td><td>Clasificación: elegir una categoría</td></tr><tr><td>insurance</td><td>500.000</td><td>Costo médico (charges)</td><td>Regresión: predecir un número</td></tr><tr><td>Medicalpremium</td><td>986</td><td>Precio de la prima (PremiumPrice)</td><td>Regresión: predecir un número</td></tr></table><div class="chips"><span class="chip on">Entender los datos</span><span class="flecha">→</span><span class="chip on">Preparar los datos</span><span class="flecha">→</span><span class="chip on">Modelar</span></div><p class="nota">El proyecto recorre las fases centrales: revisar la calidad de los datos, prepararlos (limpieza, transformación y lotes) y modelarlos con un árbol de decisión único.</p></section><section class="slide"><h2>Cómo está organizado el proyecto</h2><div class="fila">
+<pre>proyecto_mineria/
+├── main.py            punto de entrada único
+├── config.py          columnas y rutas (un solo sitio)
+├── data/   raw · limpio · resultados
+├── herramientas/      funciones reutilizables
+├── limpieza/          clases de limpieza
+│   ├── base_cleaner (DataCleaner)
+│   ├── insurance · medicalpremium
+│   └── lotes_cleaner (por bloques)
+├── pruebas/           pruebas automáticas
+├── arbol_general.py   el árbol único
+├── modelado_justo.py · modelado_regresion.py
+├── main_lotes.py · benchmark_lotes.py
+├── informes/          EDA de insurance
+├── proyecto_mineria.ipynb
+└── README_PROYECTO.md</pre>
+<div class="col"><p class="nota"><b>DataCleaner</b> define el orden de la limpieza una sola vez; cada conjunto solo programa lo que le es propio.</p>
+<p class="nota">Las columnas de cada conjunto se escriben en <b>config.py</b>: si cambian, se cambian en un solo lugar.</p>
+<p class="nota">Las <b>pruebas automáticas</b> comprueban que procesar por bloques da el mismo resultado que hacerlo todo junto.</p></div></div></section><section class="slide"><h2>Limpieza: seis pasos siempre en el mismo orden</h2><div class="chips"><span class="chip">Diagnóstico</span><span class="flecha">→</span><span class="chip">Duplicados</span><span class="flecha">→</span><span class="chip">Categorías</span><span class="flecha">→</span><span class="chip">Nulos</span><span class="flecha">→</span><span class="chip">Valores extremos</span><span class="flecha">→</span><span class="chip">Validación</span></div><div class="fila"><div class="card"><h3>Filas repetidas</h3><p>En adultos_salud se eliminaron 18.078 filas repetidas (5,7 % del archivo).</p></div><div class="card"><h3>Vacíos y categorías</h3><p>No hay valores vacíos y las categorías son consistentes (Yes/No, sexo, raza), así que no hubo que corregir textos.</p></div><div class="card"><h3>Valores extremos (outliers)</h3><p>Se detectan con una regla estadística (IQR) y se conservan: son casos reales, como fumadores, obesidad severa o primas altas.</p></div></div></section><section class="slide"><h2>Preparar y escalar: procesar por bloques</h2><div class="fila"><div class="card"><h3>Preparar los datos</h3><p>Los números se estandarizan y el texto se convierte en columnas de 0 y 1. En adultos_salud, 17 variables pasan a 50 columnas.</p></div><div class="card"><h3>Procesamiento por bloques (lotes)</h3><p>El archivo se lee de a 10.000 filas y cada bloque se guarda al terminar. Los promedios y categorías se calculan en una primera pasada.</p></div></div><table><tr><th>Con adultos_salud (bloques de 10.000)</th><th>Normal</th><th>Por bloques</th></tr><tr><td>Memoria extra al limpiar</td><td>110 MB</td><td>36 MB</td></tr><tr><td>Memoria extra al preparar</td><td>157 MB</td><td>17 MB</td></tr><tr><td>Tiempo al limpiar</td><td>2,4 s</td><td>4,5 s</td></tr><tr><td>Resultado</td><td>—</td><td>idéntico (comprobado con pruebas automáticas)</td></tr></table></section><section class="slide" style="gap:28px"><h2>Modelar: el árbol único frente a otros modelos</h2><div class="t2"><div><p class="sub2">¿Tiene enfermedad? (adultos_salud)</p><table><tr><th>Modelo</th><th>Detecta</th><th>F1</th><th>ROC AUC</th></tr><tr><td>Árbol (prof. 4)</td><td>0,68</td><td>0,30</td><td>0,72</td></tr><tr><td>Naive Bayes</td><td>0,85</td><td>0,28</td><td>0,80</td></tr><tr><td><b>Regresión logística</b></td><td>0,77</td><td><b>0,34</b></td><td><b>0,83</b></td></tr><tr><td>KNN (k=5)</td><td>0,13</td><td>0,19</td><td>0,70</td></tr><tr><td>KNN (k=31)</td><td>0,04</td><td>0,07</td><td>0,80</td></tr></table></div><div><p class="sub2">¿Cuánto cuesta? (R² · error medio)</p><table><tr><th>Modelo</th><th>insurance</th><th>Medicalpremium</th></tr><tr><td>Regresión lineal</td><td>0,76 · 3.955</td><td>0,62 · 2.721</td></tr><tr><td>Árbol (prof. 4)</td><td>0,87 · 2.425</td><td>0,73 · 1.835</td></tr><tr><td><b>Random Forest</b></td><td><b>0,88 · 2.203</b></td><td><b>0,79 · 1.156</b></td></tr></table></div></div><p class="nota">Comparación en igualdad de condiciones, con validación cruzada de 5 particiones: todos tratan el desbalance igual y el escalado se ajusta solo con los datos de entrenamiento. El árbol único (4 preguntas) detecta en promedio el 75 % del riesgo alto en los tres conjuntos juntos.</p></section><section class="slide"><h2>Conclusiones y próximos pasos</h2><div class="fila"><div class="card"><h3>Lo aprendido</h3><p>Acertar mucho no es acertar bien: en adultos_salud, responder siempre “No” ya acierta 91 %.</p><p>Los resultados de un árbol cambian con la muestra: hay que citar un rango.</p><p>El árbol es fácil de explicar, pero otros modelos separan mejor: la regresión logística para la enfermedad y Random Forest para los costos.</p></div><div class="card"><h3>Próximos pasos</h3><p>Decidir qué versión de insurance se entrega (1.337 o 500.000 filas).</p><p>Comparar main.py con el original del proyecto.</p><p>Probar los bloques con insurance y Medicalpremium originales.</p></div></div></section></main>
+<div id="hud"><span id="contador"></span> · ← → navegar · F pantalla completa · Ctrl+P exportar a PDF</div>
+<script>const st=document.getElementById("stage"),sl=[...document.querySelectorAll(".slide")],
+bar=document.getElementById("barra"),ct=document.getElementById("contador");let i=0;
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform="translate(-50%,-50%) scale("+k+")"}
+function show(n){i=Math.max(0,Math.min(sl.length-1,n));sl.forEach((s,k)=>s.classList.toggle("activa",k===i));
+bar.style.width=((i+1)/sl.length*100)+"%";ct.textContent=(i+1)+" / "+sl.length;history.replaceState(null,"","#"+(i+1))}
+addEventListener("resize",fit);
+addEventListener("keydown",e=>{const k=e.key;
+if(["ArrowRight","ArrowDown","PageDown"," "].includes(k)){e.preventDefault();show(i+1)}
+else if(["ArrowLeft","ArrowUp","PageUp"].includes(k)){e.preventDefault();show(i-1)}
+else if(k==="Home")show(0);else if(k==="End")show(sl.length-1);
+else if(k==="f"||k==="F"){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}});
+document.addEventListener("click",e=>{e.clientX>innerWidth/2?show(i+1):show(i-1)});
+fit();show((parseInt(location.hash.slice(1))||1)-1);</script></body></html>
